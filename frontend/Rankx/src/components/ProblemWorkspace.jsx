@@ -23,6 +23,14 @@ export default function ProblemWorkspace({ problem }) {
   const [showConsole, setShowConsole] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  // 🔹 Testcase Drawer State (NEW)
+  const [testTab, setTestTab] = useState("testcase"); // testcase | output
+  const [sampleTestCases, setSampleTestCases] = useState([]);
+  const [activeTestCase, setActiveTestCase] = useState(0);
+
+  // 🔹 Custom Testcase (NEW)
+  const [customInput, setCustomInput] = useState("");
+
   // Sidebar
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [problems, setProblems] = useState([]);
@@ -62,6 +70,21 @@ export default function ProblemWorkspace({ problem }) {
     return () => document.removeEventListener("fullscreenchange", handler);
   }, []);
 
+
+  /* ---------- fetch sample testcases ---------- */
+  useEffect(() => {
+    if (!problem?.id) return;
+
+    axios
+      .get(`/api/problems/${problem.id}/testcases/samples`)
+      .then(res => {
+        setSampleTestCases(res.data || []);
+        setActiveTestCase(0);
+      })
+      .catch(err => console.error("Failed to load testcases", err));
+  }, [problem?.id]);
+
+
   /* ---------- init language + starter code ---------- */
   useEffect(() => {
     if (problem?.languages?.length > 0) {
@@ -81,9 +104,8 @@ export default function ProblemWorkspace({ problem }) {
   return (
     <div
       ref={workspaceRef}
-      className={`h-screen flex flex-col ${
-        isDark ? "bg-[#1e1e1e] text-gray-200" : "bg-gray-100 text-gray-900"
-      }`}
+      className={`h-screen flex flex-col ${isDark ? "bg-[#1e1e1e] text-gray-200" : "bg-gray-100 text-gray-900"
+        }`}
     >
 
       {/* ================= NAVBAR ================= */}
@@ -117,11 +139,10 @@ export default function ProblemWorkspace({ problem }) {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`capitalize pb-1 ${
-                  activeTab === tab
-                    ? "border-b-2 border-green-500 text-white"
-                    : "text-gray-400"
-                }`}
+                className={`capitalize pb-1 ${activeTab === tab
+                  ? "border-b-2 border-green-500 text-white"
+                  : "text-gray-400"
+                  }`}
               >
                 {tab}
               </button>
@@ -140,14 +161,12 @@ export default function ProblemWorkspace({ problem }) {
                 <p className="text-gray-400">{problem.constraints}</p>
               </>
             )}
-            {activeTab !== "question" && (
-              <p className="text-gray-400">Coming soon...</p>
-            )}
           </div>
         </div>
 
         {/* ================= RIGHT PANEL ================= */}
-        <div className="w-1/2 flex flex-col">
+        {/* 🔑 made relative (required for overlay drawer) */}
+        <div className="w-1/2 flex flex-col relative">
 
           <div className="flex justify-between items-center px-4 py-2 border-b border-gray-700">
             <select
@@ -179,7 +198,8 @@ export default function ProblemWorkspace({ problem }) {
             </div>
           </div>
 
-          <div className="flex flex-col flex-1 overflow-hidden">
+          {/* ================= EDITOR ================= */}
+          <div className="flex-1 overflow-hidden">
             <Editor
               height="100%"
               theme={isDark ? "vs-dark" : "light"}
@@ -190,10 +210,141 @@ export default function ProblemWorkspace({ problem }) {
             />
           </div>
 
-          <div className="flex justify-between items-center px-4 py-2 border-t border-gray-700">
+          {/* ================= LEETCODE TESTCASE DRAWER ================= */}
+          <div
+            className={`absolute left-0 right-0 bottom-[56px] z-20
+    transition-transform duration-300 ease-in-out
+    ${showConsole ? "translate-y-0" : "translate-y-full"}
+  `}
+            style={{ height: "260px" }}
+          >
+            <div className="h-full bg-[#1e1e1e] border-t border-gray-700 flex flex-col">
+
+              {/* Tabs */}
+              <div className="flex gap-6 px-4 py-2 border-b border-gray-700">
+                <button
+                  onClick={() => setTestTab("testcase")}
+                  className={`pb-1 ${testTab === "testcase"
+                    ? "border-b-2 border-green-500 text-white"
+                    : "text-gray-400"
+                    }`}
+                >
+                  Testcase
+                </button>
+
+                <button
+                  onClick={() => setTestTab("output")}
+                  className={`pb-1 ${testTab === "output"
+                    ? "border-b-2 border-green-500 text-white"
+                    : "text-gray-400"
+                    }`}
+                >
+                  Output
+                </button>
+
+                <button
+                  onClick={() => setTestTab("custom")}
+                  className={`pb-1 ${testTab === "custom"
+                      ? "border-b-2 border-green-500 text-white"
+                      : "text-gray-400"
+                    }`}
+                >
+                  Custom Testcase
+                </button>
+
+              </div>
+
+              {/* Case selector */}
+              {testTab === "testcase" && (
+                <div className="flex gap-2 px-4 py-2 border-b border-gray-700">
+                  {sampleTestCases.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveTestCase(idx)}
+                      className={`px-3 py-1 text-sm rounded ${activeTestCase === idx
+                        ? "bg-[#2d2d2d] text-white"
+                        : "text-gray-400 hover:bg-[#2d2d2d]"
+                        }`}
+                    >
+                      Case {idx + 1}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Content */}
+              <div className="flex-1 p-4 overflow-y-auto text-sm">
+
+                {/* TESTCASE TAB */}
+                {testTab === "testcase" && sampleTestCases[activeTestCase] && (
+                  <>
+                    <div className="text-gray-400 mb-1">Input:</div>
+                    <pre className="bg-[#1a1a1a] p-3 rounded whitespace-pre-wrap text-gray-200">
+                      {sampleTestCases[activeTestCase].input}
+                    </pre>
+
+                    <div className="text-gray-400 mt-4 mb-1">Expected Output:</div>
+                    <pre className="bg-[#1a1a1a] p-3 rounded whitespace-pre-wrap text-gray-200">
+                      {sampleTestCases[activeTestCase].expectedOutput}
+                    </pre>
+                  </>
+                )}
+
+                {/* OUTPUT TAB */}
+                {testTab === "output" && (
+                  <pre className="bg-black p-3 rounded text-green-400 whitespace-pre-wrap">
+                    {output || "Run the code to see output"}
+                  </pre>
+                )}
+
+                {/* CUSTOM TESTCASE TAB */}
+{testTab === "custom" && (
+  <div className="flex flex-col gap-3">
+    <div className="text-gray-400 text-sm">
+      Custom Input:
+    </div>
+
+<textarea
+  value={customInput}
+  onChange={(e) => setCustomInput(e.target.value)}
+  placeholder={
+    sampleTestCases.length > 0
+      ? `Example (from sample testcase):\n\n${sampleTestCases[0].input}`
+      : "Enter input exactly as stdin"
+  }
+  className="w-full h-32 bg-[#1a1a1a] text-gray-200 p-3 rounded resize-none outline-none border border-gray-700 focus:border-green-500"
+/>
+
+
+    <div className="flex justify-end">
+      <button
+        onClick={() => {
+          // TEMP: frontend-only
+          setOutput("Running with custom input...\n\n" + customInput);
+          setTestTab("output");
+          setShowConsole(true);
+        }}
+        className="px-4 py-1 bg-green-600 rounded text-white text-sm"
+      >
+        Run Custom Input
+      </button>
+    </div>
+  </div>
+)}
+
+
+              </div>
+            </div>
+          </div>
+
+
+          {/* ================= ACTION BAR ================= */}
+          <div className="flex justify-between items-center px-4 py-2 border-t border-gray-700 relative z-40 bg-[#1e1e1e]">
+
             <button
               onClick={() => setShowConsole(!showConsole)}
               className="icon-btn"
+              title="Toggle Testcases"
             >
               🖥️
             </button>
@@ -295,4 +446,3 @@ export default function ProblemWorkspace({ problem }) {
     </div>
   );
 }
-  
