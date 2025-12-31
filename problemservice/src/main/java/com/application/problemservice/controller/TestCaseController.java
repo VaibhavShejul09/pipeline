@@ -4,12 +4,14 @@ package com.application.problemservice.controller;
 import com.application.problemservice.dto.*;
 import com.application.problemservice.service.TestCaseService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@Slf4j
 public class TestCaseController {
 
     private final TestCaseService testCaseService;
@@ -45,9 +47,10 @@ public class TestCaseController {
        PUBLIC APIs (Sample Test Cases Only)
        ===================================================== */
 
-    @GetMapping("/problems/{problemId}/testcases/samples")
+        @GetMapping("/problems/{problemId}/testcases/samples")
     public List<SampleTestCaseResponse> getSampleTestCases(
             @PathVariable Long problemId) {
+        log.info("testCases--"+testCaseService.getSampleTestCases(problemId));
         return testCaseService.getSampleTestCases(problemId);
     }
 

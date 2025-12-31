@@ -1,0 +1,255 @@
+-------------------------------------------------------------------------------------------------
+Problem table
+-------------------------------------------------------------------------------------------------
+
+INSERT INTO problems
+(id, title, statement, difficulty, tags, constraints, editorial,
+ created_by, active, time_limit_ms, memory_limit_mb)
+VALUES
+-- 1
+(1, 'Two Sum',
+ 'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.',
+ 'EASY',
+ 'array,hashmap',
+ '2 <= nums.length <= 10^5',
+ 'Use a hashmap to store visited elements.',
+ 101, true, 1000, 256),
+
+-- 2
+(2, 'Reverse String',
+ 'Write a function that reverses a string.',
+ 'EASY',
+ 'string,two-pointers',
+ '1 <= s.length <= 10^5',
+ 'Swap characters from both ends.',
+ 101, true, 1000, 128),
+
+-- 3
+(3, 'Palindrome Number',
+ 'Determine whether an integer is a palindrome.',
+ 'EASY',
+ 'math',
+ '-2^31 <= x <= 2^31 - 1',
+ 'Reverse half of the number.',
+ 101, true, 1000, 128),
+
+-- 4
+(4, 'Valid Parentheses',
+ 'Check if the input string has valid parentheses.',
+ 'MEDIUM',
+ 'stack,string',
+ '1 <= s.length <= 10^4',
+ 'Use stack to match brackets.',
+ 101, true, 1000, 256),
+
+-- 5
+(5, 'Maximum Subarray',
+ 'Find the contiguous subarray with the largest sum.',
+ 'MEDIUM',
+ 'array,dp',
+ '1 <= nums.length <= 10^5',
+ 'Kadane’s Algorithm.',
+ 101, true, 1000, 256),
+
+-- 6
+(6, 'Merge Intervals',
+ 'Merge all overlapping intervals.',
+ 'MEDIUM',
+ 'sorting,intervals',
+ '1 <= intervals.length <= 10^4',
+ 'Sort and merge overlapping intervals.',
+ 101, true, 2000, 256),
+
+-- 7
+(7, 'Binary Search',
+ 'Search a sorted array using binary search.',
+ 'EASY',
+ 'binary-search',
+ '1 <= nums.length <= 10^5',
+ 'Divide array into halves.',
+ 101, true, 1000, 128),
+
+-- 8
+(8, 'Fibonacci Number',
+ 'Compute the nth Fibonacci number.',
+ 'EASY',
+ 'dp,recursion',
+ '0 <= n <= 30',
+ 'Use iterative DP.',
+ 101, true, 1000, 128),
+
+-- 9
+(9, 'Longest Common Prefix',
+ 'Find the longest common prefix among strings.',
+ 'EASY',
+ 'string',
+ '1 <= strs.length <= 200',
+ 'Compare characters one by one.',
+ 101, true, 1000, 128),
+
+-- 10
+(10, 'Climbing Stairs',
+ 'Count ways to climb stairs with 1 or 2 steps.',
+ 'EASY',
+ 'dp',
+ '1 <= n <= 45',
+ 'DP with O(1) space.',
+ 101, true, 1000, 128);
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------
+Problem languages table
+-------------------------------------------------------------------------------------------------
+
+INSERT INTO problem_languages
+(problem_id, language_key, display_name, editor_mode, active)
+SELECT id, 'java17', 'Java 17', 'java', true FROM problems
+UNION ALL
+SELECT id, 'python3', 'Python 3', 'python', true FROM problems
+UNION ALL
+SELECT id, 'javascript', 'JavaScript', 'javascript', true FROM problems;
+
+
+
+-------------------------------------------------------------------------------------------------
+Problem templates table
+-------------------------------------------------------------------------------------------------
+INSERT INTO problem_templates (problem_id, language_key, starter_code)
+SELECT id, 'java17',
+'class Main {
+    public static void main(String[] args) {
+        // Read input
+        // Write logic
+        // Print output
+    }
+}'
+FROM problems;
+
+INSERT INTO problem_templates (problem_id, language_key, starter_code)
+SELECT id, 'python3',
+'def main():
+    # Read input
+    # Write logic
+    # Print output
+
+if __name__ == "__main__":
+    main()'
+FROM problems;
+
+INSERT INTO problem_templates (problem_id, language_key, starter_code)
+SELECT id, 'javascript',
+'function main() {
+    // Read input
+    // Write logic
+    // Print output
+}
+
+main();'
+FROM problems;
+
+
+
+-------------------------------------------------------------------------------------------------
+Problem templates table
+-------------------------------------------------------------------------------------------------
+
+
+INSERT INTO test_cases
+(problem_id, input, expected_output, is_sample, score, active)
+VALUES
+
+/* =========================================================
+   PROBLEM 1 – TWO SUM
+   ========================================================= */
+(1, '2 7 11 15\n9', '0 1', true, 1, true),
+(1, '3 2 4\n6', '1 2', true, 1, true),
+(1, '3 3\n6', '0 1', false, 1, true),
+(1, '1 5 7 9\n10', '0 3', false, 1, true),
+(1, '0 4 3 0\n0', '0 3', false, 1, true),
+
+/* =========================================================
+   PROBLEM 2 – REVERSE STRING
+   ========================================================= */
+(2, 'hello', 'olleh', true, 1, true),
+(2, 'abcd', 'dcba', true, 1, true),
+(2, 'racecar', 'racecar', false, 1, true),
+(2, 'a', 'a', false, 1, true),
+(2, 'RankX', 'XknaR', false, 1, true),
+
+/* =========================================================
+   PROBLEM 3 – PALINDROME NUMBER
+   ========================================================= */
+(3, '121', 'true', true, 1, true),
+(3, '123', 'false', true, 1, true),
+(3, '-121', 'false', false, 1, true),
+(3, '10', 'false', false, 1, true),
+(3, '1221', 'true', false, 1, true),
+
+/* =========================================================
+   PROBLEM 4 – VALID PARENTHESES
+   ========================================================= */
+(4, '()[]{}', 'true', true, 1, true),
+(4, '(]', 'false', true, 1, true),
+(4, '([{}])', 'true', false, 1, true),
+(4, '(((', 'false', false, 1, true),
+(4, '{[()]}', 'true', false, 1, true),
+
+/* =========================================================
+   PROBLEM 5 – MAXIMUM SUBARRAY
+   ========================================================= */
+(5, '-2 1 -3 4 -1 2 1 -5 4', '6', true, 1, true),
+(5, '1', '1', true, 1, true),
+(5, '5 4 -1 7 8', '23', false, 1, true),
+(5, '-1 -2 -3', '-1', false, 1, true),
+(5, '0 0 0', '0', false, 1, true),
+
+/* =========================================================
+   PROBLEM 6 – MERGE INTERVALS
+   ========================================================= */
+(6, '1 3,2 6,8 10,15 18', '1 6,8 10,15 18', true, 1, true),
+(6, '1 4,4 5', '1 5', true, 1, true),
+(6, '1 10,2 3,4 8', '1 10', false, 1, true),
+(6, '5 7', '5 7', false, 1, true),
+(6, '1 2,3 4,5 6', '1 2,3 4,5 6', false, 1, true),
+
+/* =========================================================
+   PROBLEM 7 – BINARY SEARCH
+   ========================================================= */
+(7, '1 3 5 7 9\n7', '3', true, 1, true),
+(7, '1 2 3 4 5\n6', '-1', true, 1, true),
+(7, '1\n1', '0', false, 1, true),
+(7, '1 2\n2', '1', false, 1, true),
+(7, '1 2 3 4 5\n1', '0', false, 1, true),
+
+/* =========================================================
+   PROBLEM 8 – FIBONACCI NUMBER
+   ========================================================= */
+(8, '0', '0', true, 1, true),
+(8, '1', '1', true, 1, true),
+(8, '5', '5', false, 1, true),
+(8, '10', '55', false, 1, true),
+(8, '15', '610', false, 1, true),
+
+/* =========================================================
+   PROBLEM 9 – LONGEST COMMON PREFIX
+   ========================================================= */
+(9, 'flower flow flight', 'fl', true, 1, true),
+(9, 'dog racecar car', '', true, 1, true),
+(9, 'interview internet internal', 'inte', false, 1, true),
+(9, 'a a a', 'a', false, 1, true),
+(9, 'abc ab abd', 'ab', false, 1, true),
+
+/* =========================================================
+   PROBLEM 10 – CLIMBING STAIRS
+   ========================================================= */
+(10, '2', '2', true, 1, true),
+(10, '3', '3', true, 1, true),
+(10, '4', '5', false, 1, true),
+(10, '5', '8', false, 1, true),
+(10, '10', '89', false, 1, true);
+
+

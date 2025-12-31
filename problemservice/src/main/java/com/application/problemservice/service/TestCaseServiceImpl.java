@@ -96,8 +96,10 @@ public class TestCaseServiceImpl implements TestCaseService {
         return SampleTestCaseResponse.builder()
                 .id(tc.getId())
                 .input(tc.getInput())
+                .expectedOutput(tc.getExpectedOutput()) // ✅ FIX
                 .build();
     }
+
 
     private JudgeTestCaseResponse mapToJudgeResponse(TestCase tc) {
         return JudgeTestCaseResponse.builder()

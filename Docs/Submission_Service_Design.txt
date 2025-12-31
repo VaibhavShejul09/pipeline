@@ -1,0 +1,220 @@
+
+SUBMISSION SERVICE – DESIGN DOCUMENT
+Project: Rankx (LeetCode + KodeKloud Clone)
+Service: Submission Service
+Stage: Development (Pre-Production)
+Execution Engine: Judge0
+
+--------------------------------------------------
+1. PURPOSE
+--------------------------------------------------
+The Submission Service handles code execution workflows triggered by RUN and SUBMIT actions.
+It orchestrates communication between:
+- Frontend
+- Problem Service (read-only)
+- Judge0 (external execution engine)
+
+Judge0 is treated as a black-box executor. All correctness decisions are made by this service.
+
+--------------------------------------------------
+2. GOALS
+--------------------------------------------------
+- Fast feedback for RUN
+- Accurate evaluation for SUBMIT
+- Clear submission lifecycle
+- Multi-language support
+- Secure and isolated execution
+
+--------------------------------------------------
+3. SCOPE
+--------------------------------------------------
+INCLUDED:
+- Submission lifecycle management
+- Judge0 integration
+- Verdict calculation
+- Submission persistence
+- Submission history APIs
+
+EXCLUDED:
+- Problem creation
+- Test case creation
+- Compilation logic
+- Sandbox/Docker management
+
+--------------------------------------------------
+4. HIGH-LEVEL ARCHITECTURE
+--------------------------------------------------
+Client (UI)
+  |
+  v
+Submission Controller
+  |
+  v
+Submission Service (Business Logic)
+  |
+  +--> Judge0 API
+  |
+  +--> Problem Service (Internal APIs)
+
+--------------------------------------------------
+5. RUN vs SUBMIT
+--------------------------------------------------
+RUN:
+- Uses sample test cases only
+- No database persistence
+- Fast response
+- Used for debugging
+
+SUBMIT:
+- Uses all test cases (sample + hidden)
+- Persisted in DB
+- Final verdict computed
+- Used for evaluation
+
+--------------------------------------------------
+6. SUBMISSION LIFECYCLE
+--------------------------------------------------
+CREATED
+  -> PENDING
+  -> RUNNING
+  -> ACCEPTED
+     OR
+     WRONG_ANSWER / TIME_LIMIT_EXCEEDED /
+     RUNTIME_ERROR / COMPILATION_ERROR
+
+RUN stops after execution.
+SUBMIT completes full lifecycle.
+
+--------------------------------------------------
+7. CORE DOMAIN MODEL (CONCEPTUAL)
+--------------------------------------------------
+Submission:
+- submissionId
+- userId
+- problemId
+- languageKey
+- sourceCode
+- status
+- runtime
+- memory
+- createdAt
+- updatedAt
+
+RUN requests are not persisted.
+
+--------------------------------------------------
+8. API OVERVIEW
+--------------------------------------------------
+Public APIs:
+POST /api/submissions/run
+POST /api/submissions/submit
+
+Query APIs:
+GET /api/submissions/{id}
+GET /api/users/{userId}/submissions
+GET /api/problems/{problemId}/submissions
+
+--------------------------------------------------
+9. PROBLEM SERVICE INTEGRATION
+--------------------------------------------------
+Submission Service fetches:
+- Problem metadata
+- Time & memory limits
+- Supported languages
+- Test cases (sample or all)
+
+Problem Service is read-only in this flow.
+
+--------------------------------------------------
+10. JUDGE0 INTEGRATION
+--------------------------------------------------
+Phase 1: Submit code to Judge0
+- source code
+- language id
+- stdin
+Returns token
+
+Phase 2: Poll Judge0 using token
+- stdout
+- stderr
+- status
+- time
+- memory
+
+Submission Service handles polling and interpretation.
+
+--------------------------------------------------
+11. VERDICT ENGINE
+--------------------------------------------------
+Judge0 does not decide correctness.
+Submission Service computes verdict by:
+- Normalizing output
+- Comparing expected vs actual output
+- Handling execution errors
+
+Possible verdicts:
+- ACCEPTED
+- WRONG_ANSWER
+- TIME_LIMIT_EXCEEDED
+- RUNTIME_ERROR
+- COMPILATION_ERROR
+
+--------------------------------------------------
+12. LANGUAGE HANDLING
+--------------------------------------------------
+Internal mapping:
+java17   -> Judge0 ID
+python3  -> Judge0 ID
+cpp17    -> Judge0 ID
+
+Mapping is config-based, not stored in DB.
+
+--------------------------------------------------
+13. ERROR HANDLING
+--------------------------------------------------
+- Compilation error -> fail immediately
+- Runtime error -> runtime error verdict
+- Timeout -> TLE
+- Judge0 down -> retry or graceful failure
+- Wrong output -> wrong answer
+
+--------------------------------------------------
+14. SECURITY CONSIDERATIONS
+--------------------------------------------------
+- Judge0 tokens are backend-only
+- Hidden test cases are never exposed
+- User code is not logged in production
+- APIs will be rate-limited later
+
+--------------------------------------------------
+15. DEVELOPMENT vs PRODUCTION
+--------------------------------------------------
+Development:
+- Synchronous execution
+- Sequential test case runs
+- No Kafka
+- No WebSockets
+
+Production (Future):
+- Async execution
+- Kafka-based workflow
+- Parallel execution
+- Real-time updates
+- Redis caching
+
+--------------------------------------------------
+16. RESPONSIBILITY SUMMARY
+--------------------------------------------------
+Controller  -> API layer
+Service     -> Workflow orchestration
+Judge0      -> Code execution
+Verdict     -> Correctness decision
+Repository  -> Persistence
+
+--------------------------------------------------
+17. KEY TAKEAWAY
+--------------------------------------------------
+Judge0 executes code.
+Submission Service decides correctness.
+
+This service is the brain of the platform.
