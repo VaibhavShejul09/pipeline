@@ -1,24 +1,26 @@
 pipeline {
-  agent {
-    docker {
-      image 'docker.io/shejulv088/maven-docker-agent'
-      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+    agent {
+        docker {
+            image 'docker.io/shejulv088/maven-docker-agent'
+            args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
+        }
     }
-  }
-  stages {
-    stage('Checkout') {
-      steps {
-        sh 'echo passed'
-        git branch: 'main', url: 'https://github.com/VaibhavShejul09/pipeline.git'
-      }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                sh 'echo passed'
+                git branch: 'main', url: 'https://github.com/VaibhavShejul09/pipeline.git'
+            }
+        }
+
+        stage('Build and Test') {
+            steps {
+                sh 'ls -ltr'
+                // dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+                //     sh 'mvn clean package'
+                // }
+            }
+        }
     }
-  }
-    stage('Build and Test') {
-      steps {
-        sh 'ls -ltr'
-        // build the project and create a JAR file
-        
-      }
-    }
-  }  
 }
