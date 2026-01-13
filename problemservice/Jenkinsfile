@@ -17,9 +17,8 @@ pipeline {
         stage('Build and Test') {
             steps {
                 sh 'ls -ltr'
-                // dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
-                //     sh 'mvn clean package'
-                // }
+                sh 'cd problemservice/ && mvn clean package'
+                sh ' la -ltr'
             }
         }
     }
