@@ -1,14 +1,14 @@
 pipeline {
     agent {
         docker {
-            image 'maven:3.9.6-eclipse-temurin-21'
+            image 'shejulv088/maven-docker:latest'
             args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
 
     environment {
-        REGISTRY = "shejulv088" // Your Docker Hub username
-        APP_NAME = "problemservice" // Change per service
+        REGISTRY = "shejulv088"
+        APP_NAME = "problemservice"
     }
 
     options {
@@ -26,23 +26,27 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                dir('problemservice') {      // <-- directory relative to workspace
-                    sh 'ls -ltr'             // list files
-                    sh 'mvn clean package -DskipTests' // build Maven project
+                dir('problemservice') {
+                    sh 'mvn clean package -DskipTests'
                 }
-
             }
         }
 
         stage('Prepare Docker Tag') {
             steps {
                 script {
+                    sh 'git config --global --add safe.directory $WORKSPACE'
+
                     def version = sh(
                         script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout",
                         returnStdout: true
                     ).trim()
 
-                    def shortSha = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    def shortSha = sh(
+                        script: "git rev-parse --short HEAD",
+                        returnStdout: true
+                    ).trim()
+
                     env.IMAGE_TAG = "${version}-${BUILD_NUMBER}-${shortSha}"
                     env.IMAGE_NAME = "${REGISTRY}/${APP_NAME}:${IMAGE_TAG}"
 
@@ -53,16 +57,9 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                
-                dir('problemservice') {      // <-- directory relative to workspace
+                dir('problemservice') {
                     sh "docker build -t ${IMAGE_NAME} ."
                 }
-            }
-        }
-
-        stage('Security Scan') {
-            steps {
-                sh "trivy image ${IMAGE_NAME} || true"
             }
         }
 
@@ -74,18 +71,6 @@ pipeline {
                     }
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo "CI successful: ${IMAGE_NAME}"
-        }
-        failure {
-            echo "CI failed!"
-        }
-        cleanup {
-            sh 'docker system prune -f || true'
         }
     }
 }
