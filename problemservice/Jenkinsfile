@@ -9,7 +9,7 @@ pipeline {
     stage('Checkout') {
       steps {
         sh 'echo passed'
-        //git branch: 'main', url: 'https://github.com/VaibhavShejul09/pipeline.git'
+        git branch: 'main', url: 'https://github.com/VaibhavShejul09/pipeline.git'
       }
     }
   }
@@ -20,5 +20,5 @@ pipeline {
         
       }
     }
-    
+  }  
 }
