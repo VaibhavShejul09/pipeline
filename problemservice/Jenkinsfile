@@ -17,8 +17,8 @@ pipeline {
         stage('Build and Test') {
             steps {
                 sh 'ls -ltr'
-                sh 'cd problemservice/ && mvn clean package'
-                sh ' la -ltr'
+                sh 'cd problemservice/' // && mvn clean package'
+                sh ' ls -ltr'
             }
         }
     }
