@@ -56,12 +56,20 @@ pipeline {
         }
 
         stage('Docker Build') {
+            agent {
+                docker {
+                    image 'docker:26-cli'
+                    args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
             steps {
                 dir('problemservice') {
+                    sh 'docker version'
                     sh "docker build -t ${IMAGE_NAME} ."
                 }
             }
         }
+        
 
         stage('Push Docker Image') {
             steps {
