@@ -58,7 +58,7 @@ pipeline {
         stage('Docker Build') {
             agent {
                 docker {
-                    image 'docker:26-cli'
+                    image 'shejulv088/docker-build-agent:latest'
                     args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
