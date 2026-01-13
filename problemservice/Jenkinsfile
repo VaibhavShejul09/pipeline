@@ -9,16 +9,16 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                sh 'echo passed'
                 git branch: 'main', url: 'https://github.com/VaibhavShejul09/pipeline.git'
             }
         }
 
         stage('Build and Test') {
             steps {
-                sh 'ls -ltr'
-                sh 'cd /var/lib/jenkins/workspace/demo/problemservice/' // && mvn clean package'
-                sh ' ls -ltr'
+                dir('problemservice') {      // <-- directory relative to workspace
+                    sh 'ls -ltr'             // list files
+                    sh 'mvn clean package -DskipTests' // build Maven project
+                }
             }
         }
     }
