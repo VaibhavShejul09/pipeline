@@ -1,0 +1,35 @@
+# -----------------------
+# Node dependencies
+# -----------------------
+node_modules
+npm-debug.log
+yarn-error.log
+
+# -----------------------
+# Build output
+# -----------------------
+build
+dist
+
+# -----------------------
+# Docker & Git metadata
+# -----------------------
+Dockerfile
+.dockerignore
+.git
+.gitignore
+
+# -----------------------
+# OS / Editor files
+# -----------------------
+.DS_Store
+*.swp
+*.swo
+
+# -----------------------
+# Logs and temporary files
+# -----------------------
+*.log
+tmp/
+temp/
+
