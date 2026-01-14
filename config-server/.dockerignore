@@ -1,0 +1,26 @@
+# Ignore build output
+target/
+
+# Java temporary files
+*.log
+*.tmp
+*.swp
+*.sw?
+
+# Build scripts (not needed in image)
+Dockerfile
+.dockerignore
+
+# Git metadata
+.git
+.gitignore
+
+# IntelliJ / VSCode / IDE settings
+.idea/
+*.iml
+.vscode/
+
+# OS junk files
+.DS_Store
+Thumbs.db
+
