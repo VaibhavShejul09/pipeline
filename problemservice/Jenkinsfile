@@ -25,14 +25,13 @@ pipeline {
             }
         }
 
-         stage('Build & Test') {
+        stage('Build & Test') {
             steps {
                 dir('problemservice') {
                     sh 'mvn clean package -DskipTests'
                 }
             }
         }
-
 
         stage('Prepare Image Tags') {
             steps {
@@ -55,12 +54,11 @@ pipeline {
             steps {
                 dir('problemservice') {
                     sh """
-                          docker build \
-                              -t ${IMAGE_REPO}:${IMMUTABLE_TAG} \
-                              -t ${IMAGE_REPO}:${METADATA_TAG} .
-                       """
+                        docker build \
+                            -t ${IMAGE_REPO}:${IMMUTABLE_TAG} \
+                            -t ${IMAGE_REPO}:${METADATA_TAG} .
+                    """
                 }
-                
             }
         }
 
@@ -72,7 +70,7 @@ pipeline {
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
                     sh """
-                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                     """
                 }
             }
@@ -81,19 +79,20 @@ pipeline {
         stage('Push Image to Docker Hub') {
             steps {
                 script {
-                   docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
-                   sh "docker push ${IMAGE_REPO}:${IMMUTABLE_TAG}"
-                   sh "docker push ${IMAGE_REPO}:${METADATA_TAG}"
-               }
-           }
-       }
-    }
-    
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
+                        sh "docker push ${IMAGE_REPO}:${IMMUTABLE_TAG}"
+                        sh "docker push ${IMAGE_REPO}:${METADATA_TAG}"
+                    }
+                }
+            }
+        }
+
+    }  // <-- closes stages
 
     post {
         success {
             echo "Image pushed to Docker Hub successfully"
         }
     }
-}
 
+}  // <-- closes pipeline
