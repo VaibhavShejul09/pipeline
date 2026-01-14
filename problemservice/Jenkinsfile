@@ -52,6 +52,7 @@ pipeline {
         }
 
         stage('Build Docker Image') {
+            agent { label 'vaibhav' }
             steps {
                 dir('problemservice') {
                     sh """
