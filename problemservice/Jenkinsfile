@@ -16,7 +16,7 @@ pipeline {
         
         stage('Checkout') {
             steps {
-                cleanWs()
+                
                 git branch: 'main', url: 'https://github.com/VaibhavShejul09/pipeline.git'
             }
         }
