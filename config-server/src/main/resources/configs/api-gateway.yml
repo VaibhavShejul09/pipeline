@@ -9,14 +9,14 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: false
-          lower-case-service-id: false
+          enabled: true
+          lower-case-service-id: true
 
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${EUREKA_SERVICE_URL}
 
   instance:
     prefer-ip-address: true

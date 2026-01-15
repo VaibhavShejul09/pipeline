@@ -1,0 +1,97 @@
+version: '3.8'
+
+networks:
+  microservices-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    networks:
+      - microservices-network
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: application_auth_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    networks:
+      - microservices-network
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  config-server:
+    image: conf:v1
+    container_name: config-server  
+    networks:
+      - microservices-network
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+
+  discovery-server:
+    image: dis
+    container_name: discovery-server  
+    networks:
+      - microservices-network
+    ports:
+      - "8761:8761"
+    depends_on:
+      - config-server
+
+  auth-service:
+    image: auth:v1
+    networks:
+      - microservices-network
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/application_auth_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+      - EUREKA_SERVICE_URL=http://discovery-server:8761/eureka
+    depends_on:
+      - mysql
+      - redis
+      - discovery-server
+      - config-server
+
+  api-gateway:
+    image: api:v1
+    container_name: apic  
+    networks:
+      - microservices-network
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_SERVICE_URL=http://discovery-server:8761/eureka
+      - SPRING_CONFIG_URI=http://config-server:8888
+    depends_on:
+      - discovery-server
+      - config-server
+
+  frontend:
+    image: fron
+    networks:
+      - microservices-network
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-gateway
+

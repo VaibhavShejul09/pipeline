@@ -18,7 +18,7 @@ return (
         <Route path="/landing" element={<LandingPage />} />
 
         {/* Default route */}
-        <Route path="*" element={<LandingPage />} />
+        <Route path="*" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );
