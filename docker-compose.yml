@@ -34,7 +34,7 @@ services:
       - redis_data:/data
 
   config-server:
-    image: conf:v1
+    image: new_config_service:v1
     container_name: config-server  
     networks:
       - microservices-network
@@ -44,7 +44,7 @@ services:
       - SPRING_PROFILES_ACTIVE=native
 
   discovery-server:
-    image: dis
+    image: new_discovery_service:v1
     container_name: discovery-server  
     networks:
       - microservices-network
@@ -54,7 +54,7 @@ services:
       - config-server
 
   auth-service:
-    image: auth:v1
+    image: new_auth_service:v1
     networks:
       - microservices-network
     ports:
@@ -75,7 +75,7 @@ services:
       - config-server
 
   api-gateway:
-    image: api:v1
+    image: new_api_server:v1
     container_name: apic  
     networks:
       - microservices-network
@@ -89,7 +89,7 @@ services:
       - config-server
 
   frontend:
-    image: fron
+    image: new_frontend:v1
     networks:
       - microservices-network
     ports:
