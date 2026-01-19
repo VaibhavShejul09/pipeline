@@ -82,7 +82,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - EUREKA_SERVICE_URL:http://discovery-server:8761/eureka
+      - EUREKA_SERVICE_URL=http://discovery-server:8761/eureka
       - SPRING_CONFIG_URI=http://config-server:8888
     depends_on:
       - discovery-server
