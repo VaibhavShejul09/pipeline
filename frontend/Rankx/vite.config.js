@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       // 🔥 ALL APIs GO THROUGH API GATEWAY
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://apic:8080',
         changeOrigin: true,
         secure: false,
       }
