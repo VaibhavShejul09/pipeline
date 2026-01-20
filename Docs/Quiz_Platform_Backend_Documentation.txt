@@ -1,0 +1,223 @@
+QUIZ PLATFORM – BACKEND DESIGN DOCUMENTATION (PLAIN TEXT)
+================================================
+
+NOTE:
+This file is intentionally provided in PLAIN TEXT format
+so it can be opened safely in Notepad, VS Code, or any text editor.
+
+------------------------------------------------
+1. PROJECT OVERVIEW
+------------------------------------------------
+This Quiz Platform allows:
+- Admins to create and manage quizzes and questions
+- Users to attempt quizzes and view results
+
+Out of Scope (already implemented):
+- Authentication Service
+- API Gateway
+- Eureka Server
+- Config Server
+
+------------------------------------------------
+2. SERVICES IN SCOPE
+------------------------------------------------
+    1. Quiz Service
+       - Manages quiz metadata and lifecycle
+
+    2. Question Service
+       - Manages quiz questions and options
+
+    3. Attempt Service
+       - Handles quiz attempts and user answers
+
+    4. Result Service
+       - Evaluates attempts and provides results
+
+Each service:
+- Is a Spring Boot application
+- Has its own database
+- Communicates via REST APIs
+- Is registered with Eureka
+
+------------------------------------------------
+3. QUIZ SERVICE
+------------------------------------------------
+Responsibilities:
+- Create quiz (ADMIN)
+- Update quiz (ADMIN)
+- Delete quiz (ADMIN)
+- Publish / Unpublish quiz
+- List published quizzes (USER)
+
+Quiz Entity:
+- id (UUID)
+- title
+- description
+- durationMinutes
+- status (DRAFT, PUBLISHED)
+- createdAt
+
+APIs:
+POST   /quizzes
+PUT    /quizzes/{id}
+DELETE /quizzes/{id}
+POST   /quizzes/{id}/publish
+GET    /quizzes
+GET    /quizzes/{id}
+
+Sample Request:
+{
+  "title": "Java Basics",
+  "description": "Core Java MCQs",
+  "durationMinutes": 30
+}
+
+Sample Response:
+{
+  "id": "uuid",
+  "status": "DRAFT"
+}
+
+------------------------------------------------
+4. QUESTION SERVICE
+------------------------------------------------
+Responsibilities:
+- Add questions (ADMIN)
+- Update questions (ADMIN)
+- Delete questions (ADMIN)
+- Fetch questions by quiz (USER)
+
+Question Entity:
+- id
+- quizId
+- questionText
+- optionA
+- optionB
+- optionC
+- optionD
+- correctOption
+
+APIs:
+POST   /questions
+PUT    /questions/{id}
+DELETE /questions/{id}
+GET    /questions/quiz/{quizId}
+
+IMPORTANT RULE:
+Correct answers MUST NEVER be sent to users.
+
+------------------------------------------------
+5. ATTEMPT SERVICE
+------------------------------------------------
+Responsibilities:
+- Start quiz attempt
+- Save user answers
+- Submit quiz
+
+Entities:
+
+Attempt:
+- id
+- userId
+- quizId
+- status (IN_PROGRESS, SUBMITTED)
+- startedAt
+- submittedAt
+
+Answer:
+- attemptId
+- questionId
+- selectedOption
+
+APIs:
+POST /attempts/start
+POST /attempts/{attemptId}/answer
+POST /attempts/{attemptId}/submit
+
+Business Rules:
+- One active attempt per quiz per user
+- Cannot answer after submission
+- No evaluation in this service
+
+------------------------------------------------
+6. RESULT SERVICE
+------------------------------------------------
+Responsibilities:
+- Evaluate quiz answers
+- Calculate score and percentage
+- Return result and review
+
+Result Entity:
+- attemptId
+- score
+- totalQuestions
+- percentage
+
+APIs:
+GET /results/{attemptId}
+GET /results/user/{userId}
+
+Evaluation Logic:
+- Fetch answers from Attempt Service
+- Fetch correct answers from Question Service
+- Compare answers
+- Calculate score
+- Store result
+
+------------------------------------------------
+7. ER RELATIONSHIPS (TEXTUAL)
+------------------------------------------------
+Quiz    1 ---- * Question
+Quiz    1 ---- * Attempt
+Attempt 1 ---- * Answer
+Attempt 1 ---- 1 Result
+
+------------------------------------------------
+8. DEPLOYMENT NOTES
+------------------------------------------------
+Local Development:
+- Start Config Server
+- Start Eureka Server
+- Start Quiz, Question, Attempt, Result services
+
+Docker:
+- One Dockerfile per service
+- Externalized configuration
+
+Kubernetes:
+- One Deployment per service
+- One ClusterIP Service
+- ConfigMaps for configs
+- Secrets for DB credentials
+- Horizontal scaling for Attempt and Result services
+
+------------------------------------------------
+9. README.md CONTENT (FOR GIT)
+------------------------------------------------
+Project Name:
+Quiz Platform – Microservices Backend
+
+Tech Stack:
+- Java 17
+- Spring Boot 3.x
+- Spring Data JPA
+- MySQL / PostgreSQL
+- Docker
+- Kubernetes
+
+Run Order:
+1. Config Server
+2. Eureka Server
+3. Quiz Service
+4. Question Service
+5. Attempt Service
+6. Result Service
+
+Future Enhancements:
+- Redis caching
+- Kafka events
+- Analytics dashboard
+
+================================================
+END OF DOCUMENT
+================================================

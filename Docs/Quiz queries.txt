@@ -1,0 +1,239 @@
+INSERT INTO quizzes (
+    id,
+    title,
+    description,
+    duration_minutes,
+    status,
+    category,
+    sub_category,
+    difficulty,
+    created_at
+)
+VALUES
+(
+    UUID(),
+    'Java Basics Quiz',
+    'Test core Java fundamentals including OOP concepts',
+    15,
+    'PUBLISHED',
+    'Programming',
+    'Java',
+    'EASY',
+    NOW()
+),
+(
+    UUID(),
+    'Spring Boot Quiz',
+    'Spring Boot, REST APIs, annotations, and JPA',
+    20,
+    'PUBLISHED',
+    'Programming',
+    'Spring',
+    'MEDIUM',
+    NOW()
+),
+(
+    UUID(),
+    'Advanced Java Quiz',
+    'Concurrency, JVM internals, and performance',
+    30,
+    'DRAFT',
+    'Programming',
+    'Java',
+    'HARD',
+    NOW()
+);
+
+
+
+-----------------------------------------------------------------------------------------------
+for quiz 1 question
+-----------------------------------------------------------------------------------------------
+INSERT INTO questions (
+    id,
+    quiz_id,
+    question_text,
+    optiona,
+    optionb,
+    optionc,
+    optiond,
+    correct_option
+)
+VALUES
+(UUID(), '3279605c-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'What is JVM?',
+ 'Java Variable Machine',
+ 'Java Virtual Machine',
+ 'Java Visual Model',
+ 'None of these',
+ 'B'),
+
+(UUID(), '3279605c-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which keyword is used to inherit a class in Java?',
+ 'this',
+ 'super',
+ 'extends',
+ 'implements',
+ 'C'),
+
+(UUID(), '3279605c-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which data type is used to store text?',
+ 'int',
+ 'String',
+ 'boolean',
+ 'float',
+ 'B'),
+
+(UUID(), '3279605c-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which method is the entry point of a Java program?',
+ 'start()',
+ 'run()',
+ 'main()',
+ 'init()',
+ 'C'),
+
+(UUID(), '3279605c-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which of these is NOT a Java feature?',
+ 'Object-oriented',
+ 'Platform independent',
+ 'Use of pointers',
+ 'Secure',
+ 'C'),
+
+(UUID(), '3279605c-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which access modifier restricts access to same class only?',
+ 'public',
+ 'protected',
+ 'default',
+ 'private',
+ 'D'),
+
+(UUID(), '3279605c-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which collection does not allow duplicates?',
+ 'List',
+ 'Set',
+ 'Map',
+ 'ArrayList',
+ 'B'),
+
+(UUID(), '3279605c-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which keyword is used to create an object?',
+ 'class',
+ 'new',
+ 'this',
+ 'static',
+ 'B'),
+
+(UUID(), '3279605c-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which is a wrapper class?',
+ 'int',
+ 'float',
+ 'Integer',
+ 'double',
+ 'C'),
+
+(UUID(), '3279605c-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which exception occurs when dividing by zero?',
+ 'NullPointerException',
+ 'IOException',
+ 'ArithmeticException',
+ 'ArrayIndexOutOfBoundsException',
+ 'C');
+
+
+
+------------------------------------------------------------------------------------------------------
+questions for quiz 2
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO questions (
+    id,
+    quiz_id,
+    question_text,
+    optiona,
+    optionb,
+    optionc,
+    optiond,
+    correct_option
+)
+VALUES
+(UUID(), '3279a727-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'What is Spring Boot mainly used for?',
+ 'Building standalone applications',
+ 'Database management',
+ 'Frontend development',
+ 'Testing only',
+ 'A'),
+
+(UUID(), '3279a727-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which annotation marks a Spring Boot application?',
+ '@EnableSpring',
+ '@SpringApplication',
+ '@SpringBootApplication',
+ '@BootApplication',
+ 'C'),
+
+(UUID(), '3279a727-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which server is embedded by default?',
+ 'Jetty',
+ 'JBoss',
+ 'Tomcat',
+ 'GlassFish',
+ 'C'),
+
+(UUID(), '3279a727-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which file is used for configuration?',
+ 'spring.xml',
+ 'application.properties',
+ 'config.xml',
+ 'boot.properties',
+ 'B'),
+
+(UUID(), '3279a727-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which annotation exposes REST APIs?',
+ '@Controller',
+ '@Component',
+ '@RestController',
+ '@Service',
+ 'C'),
+
+(UUID(), '3279a727-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which dependency enables JPA?',
+ 'starter-web',
+ 'starter-jpa',
+ 'starter-security',
+ 'starter-test',
+ 'B'),
+
+(UUID(), '3279a727-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which HTTP method is idempotent?',
+ 'POST',
+ 'PATCH',
+ 'PUT',
+ 'CONNECT',
+ 'C'),
+
+(UUID(), '3279a727-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which annotation injects dependencies?',
+ '@Inject',
+ '@Autowired',
+ '@Bean',
+ '@Value',
+ 'B'),
+
+(UUID(), '3279a727-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which layer contains business logic?',
+ 'Controller',
+ 'Repository',
+ 'Service',
+ 'Entity',
+ 'C'),
+
+(UUID(), '3279a727-ed4d-11f0-9fc4-d45d6425b7e6',
+ 'Which build tool is commonly used?',
+ 'Ant',
+ 'Gradle',
+ 'Maven',
+ 'All of the above',
+ 'D');
+

@@ -4,13 +4,17 @@ import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.http.HttpHeaders;   // ✅ CORRECT
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
 @Component
 public class JwtAuthFilter implements GatewayFilter {
+
+    private static final String HEADER_USER_ID = "X-User-Id";
+    private static final String HEADER_ROLE = "X-Role";
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -26,7 +30,12 @@ public class JwtAuthFilter implements GatewayFilter {
             return chain.filter(exchange);
         }
 
-        // 2️⃣ Read Authorization header
+        // 2️⃣ Allow CORS preflight
+        if ("OPTIONS".equals(exchange.getRequest().getMethod().name())) {
+            return chain.filter(exchange);
+        }
+
+        // 3️⃣ Read Authorization header
         String authHeader = exchange.getRequest()
                 .getHeaders()
                 .getFirst(HttpHeaders.AUTHORIZATION);
@@ -37,26 +46,23 @@ public class JwtAuthFilter implements GatewayFilter {
 
         String token = authHeader.substring(7);
 
-        // 3️⃣ Validate token
+        // 4️⃣ Validate token
         if (!jwtUtil.isTokenValid(token)) {
             return unauthorized(exchange);
         }
 
-        // 4️⃣ Extract claims
         Claims claims = jwtUtil.extractClaims(token);
 
-        // 5️⃣ ROLE-BASED ACCESS (example)
-        if (path.startsWith("/api/admin")
-                && !claims.get("role").equals("ROLE_ADMIN")) {
-            return forbidden(exchange);
-        }
+        // 5️⃣ Extract REQUIRED claims
+        String userId = claims.getSubject(); // ✅ UUID string
+        String role = claims.get("role", String.class); // ROLE_USER
 
-        // 6️⃣ Forward user info to downstream services
+        // 6️⃣ Forward ONLY trusted user context
         ServerWebExchange mutatedExchange =
                 exchange.mutate()
-                        .request(r -> r.headers(h -> {
-                            h.add("X-User", claims.getSubject());
-                            h.add("X-Role", claims.get("role").toString());
+                        .request(request -> request.headers(headers -> {
+                            headers.set(HEADER_USER_ID, userId);
+                            headers.set(HEADER_ROLE, role);
                         }))
                         .build();
 
@@ -65,11 +71,6 @@ public class JwtAuthFilter implements GatewayFilter {
 
     private Mono<Void> unauthorized(ServerWebExchange exchange) {
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-        return exchange.getResponse().setComplete();
-    }
-
-    private Mono<Void> forbidden(ServerWebExchange exchange) {
-        exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
         return exchange.getResponse().setComplete();
     }
 }

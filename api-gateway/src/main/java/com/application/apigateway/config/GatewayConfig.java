@@ -13,21 +13,49 @@ public class GatewayConfig {
     public RouteLocator routes(RouteLocatorBuilder builder,
                                JwtAuthFilter jwtAuthFilter) {
 
+
+
         return builder.routes()
 
-                // AUTH SERVICE (PUBLIC)
+                // ================= AUTH SERVICE (PUBLIC) =================
                 .route("auth-service", r -> r
                         .path("/api/auth/**")
                         .uri("lb://AUTH-SERVICE"))
 
-                // PROBLEM SERVICE (PROTECTED)
+                // ================= QUIZ SERVICE (PROTECTED) =================
+                .route("quiz-service", r -> r
+                        .path("/api/quizzes/**","/api/admin/quizzes/**")
+                        .filters(f -> f.filter(jwtAuthFilter))
+                        .uri("lb://QUIZ-SERVICE"))
+
+                // ================= QUESTION SERVICE (PROTECTED) =================
+                .route("question-service", r -> r
+                        .path(
+                                "/api/questions/**",
+                                "/api/admin/questions/**"
+                        )
+                        .filters(f -> f.filter(jwtAuthFilter))
+                        .uri("lb://QUESTION-SERVICE"))
+
+                // ================= ATTEMPT SERVICE (PROTECTED) =================
+                .route("attempt-service", r -> r
+                        .path("/api/attempts/**")
+                        .filters(f -> f.filter(jwtAuthFilter))
+                        .uri("lb://ATTEMPT-SERVICE"))
+
+                // ================= RESULT SERVICE (PROTECTED) =================
+                .route("result-service", r -> r
+                        .path("/api/results/**")
+                        .filters(f -> f.filter(jwtAuthFilter))
+                        .uri("lb://RESULT-SERVICE"))
+
+                // ================= PROBLEM SERVICE (PROTECTED) =================
                 .route("problem-service", r -> r
                         .path("/api/problems/**")
                         .filters(f -> f.filter(jwtAuthFilter))
                         .uri("lb://PROBLEM-SERVICE"))
 
-
-                // PROBLEM SERVICE (PROTECTED)
+                // ================= SUBMISSION SERVICE (PROTECTED) =================
                 .route("submission-service", r -> r
                         .path("/api/submissions/**")
                         .filters(f -> f.filter(jwtAuthFilter))

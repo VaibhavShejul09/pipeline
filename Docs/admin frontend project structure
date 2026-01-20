@@ -1,0 +1,85 @@
+src/
+ ├─ app/
+ │   ├─ App.jsx
+ │   ├─ AdminRoutes.jsx
+ │   └─ routeConfig.js
+ │
+ ├─ layout/
+ │   ├─ AdminLayout.jsx
+ │   ├─ Sidebar.jsx
+ │   └─ Topbar.jsx
+ │
+ ├─ dashboard/
+ │   └─ AdminDashboard.jsx
+ │
+ ├─ modules/
+ │   ├─ quizzes/
+ │   │   ├─ pages/
+ │   │   │   ├─ ManageQuizzes.jsx
+ │   │   │   ├─ CreateQuiz.jsx
+ │   │   │   ├─ EditQuiz.jsx
+ │   │   │   └─ QuizPreview.jsx
+ │   │   ├─ components/
+ │   │   │   ├─ QuizAnalyticsCards.jsx
+ │   │   │   ├─ QuizFilters.jsx
+ │   │   │   ├─ QuizRow.jsx
+ │   │   │   └─ BulkActionBar.jsx
+ │   │   └─ services/
+ │   │       └─ quizApi.js
+ │   │
+ │   ├─ problems/
+ │   │   ├─ pages/
+ │   │   │   ├─ ManageProblems.jsx
+ │   │   │   ├─ CreateProblem.jsx
+ │   │   │   └─ EditProblem.jsx
+ │   │   ├─ components/
+ │   │   │   ├─ ProblemFilters.jsx
+ │   │   │   └─ ProblemRow.jsx
+ │   │   └─ services/
+ │   │       └─ problemApi.js
+ │   │
+ │   ├─ labs/
+ │   │   ├─ pages/
+ │   │   │   ├─ ManageLabs.jsx
+ │   │   │   └─ CreateLab.jsx
+ │   │   ├─ components/
+ │   │   │   └─ LabRow.jsx
+ │   │   └─ services/
+ │   │       └─ labApi.js
+ │   │
+ │   └─ users/
+ │       ├─ pages/
+ │       │   ├─ ManageUsers.jsx
+ │       │   └─ UserDetails.jsx
+ │       └─ services/
+ │           └─ userApi.js
+ │
+ ├─ shared/
+ │   ├─ components/
+ │   │   ├─ Button.jsx
+ │   │   ├─ Modal.jsx
+ │   │   ├─ Table.jsx
+ │   │   ├─ EmptyState.jsx
+ │   │   └─ ConfirmDialog.jsx
+ │   ├─ hooks/
+ │   │   ├─ useAuth.js
+ │   │   ├─ useDebounce.js
+ │   │   └─ usePagination.js
+ │   ├─ utils/
+ │   │   ├─ formatDate.js
+ │   │   ├─ formatNumber.js
+ │   │   └─ constants.js
+ │   └─ styles/
+ │       └─ globals.css
+ │
+ ├─ auth/
+ │   ├─ Login.jsx
+ │   ├─ ForgotPassword.jsx
+ │   └─ authApi.js
+ │
+ ├─ api/
+ │   ├─ axiosClient.js
+ │   └─ apiConstants.js
+ │
+ └─ assets/
+     └─ icons/

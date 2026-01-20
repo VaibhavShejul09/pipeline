@@ -5,6 +5,7 @@ import { loginApi } from "../services/authService";
 import AuthLayout from "../components/AuthLayout";
 import AuthInput from "../components/AuthInput";
 import { useNavigate } from "react-router-dom";
+import { getRoleFromToken } from "../utils/jwtUtils";
 
 
 export default function Login() {
@@ -25,15 +26,42 @@ export default function Login() {
 
         try {
             const res = await loginApi(form);
-            console.log("Login response:", res.data);
 
-            localStorage.setItem("token", res.data.accessToken);
+            const token = res.data.accessToken;
 
-            // 🔥 redirect to problem list
-            navigate("/problems");
+            // store token
+            localStorage.setItem("token", token);
+
+            // 🔥 decode role from JWT
+            const role = getRoleFromToken(token);
+
+            if (!role) {
+                throw new Error("Role not found in token");
+            }
+
+            localStorage.setItem("role", role);
+
+            if (role === "ROLE_USER") {
+                navigate("/home");
+                console.log("role-------------" + role);
+            }
+            else
+            {
+                 throw new Error("Unauthorized: You are not a valiadte user");
+            }
+
+
+            // 🔀 role-based redirect
+            /*
+                if (role === "ADMIN") {
+                    navigate("/admin/dashboard");
+                } else {
+                    navigate("/problems");
+                }
+            */
 
         } catch (err) {
-            setError(err.response?.data?.message || "Invalid credentials");
+            setError(err.response?.data?.message || err.message || "Login failed");
         } finally {
             setLoading(false);
         }

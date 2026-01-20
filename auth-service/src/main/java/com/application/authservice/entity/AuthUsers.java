@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jdk.jfr.DataAmount;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "auth_users")
 @Data
@@ -13,8 +15,8 @@ import lombok.*;
 public class AuthUsers {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+    private UUID id;
 
     private String username;
     private String password;

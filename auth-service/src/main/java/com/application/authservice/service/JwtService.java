@@ -23,7 +23,9 @@ public class JwtService {
     public String generateToken(AuthUsers user) {
 
         return Jwts.builder()
-                .setSubject(user.getUsername())
+                // 🔥 PRODUCTION FIX
+                .setSubject(user.getId().toString())   // UUID, NOT username
+
                 .claim("role", user.getRole())
                 .setIssuedAt(new Date())
                 .setExpiration(

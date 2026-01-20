@@ -52,6 +52,15 @@
         private Integer timeLimitMs;     // 1000, 2000
         private Integer memoryLimitMb;   // 256, 512
 
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "category_id", nullable = false)
+        private ProblemCategory category;
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "subcategory_id")
+        private ProblemSubCategory subCategory;
+
+
         @CreationTimestamp
         private LocalDateTime createdAt;
 
