@@ -9,6 +9,7 @@ volumes:
   redis_data:
   problem_mysql_data:
   quiz_mysql_data: 
+  submission_mysql_data:
 
 services:
 
@@ -110,6 +111,38 @@ services:
         condition: service_healthy
       auth-service:
         condition: service_started    
+
+
+  submission-mysql:
+    image: mysql:8.4.7
+    container_name: submission-mysql
+    networks:
+      - microservices-network
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: application_submission_db
+    
+    volumes:
+      - submission_mysql_data:/var/lib/mysql
+
+  submissionservice:
+    build: ./submissionservice
+    networks:
+      - microservices-network
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_CONFIG_URI: http://config-server:8888
+      SPRING_PROFILES_ACTIVE: native
+      SPRING_DATASOURCE_URL: jdbc:mysql://submission-mysql:3306/application_submission_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka  
+    depends_on:
+      problem-service:
+        condition: service_started      
   
   quiz-mysql:
     image: mysql:8.4.7
