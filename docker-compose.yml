@@ -8,6 +8,7 @@ volumes:
   auth_mysql_data:
   redis_data:
   problem_mysql_data:
+  quiz_mysql_data: 
 
 services:
 
@@ -109,6 +110,39 @@ services:
         condition: service_healthy
       auth-service:
         condition: service_started    
+  
+  quiz-mysql:
+    image: mysql:8.4.7
+    container_name: quiz-mysql
+    networks:
+      - microservices-network
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: application_quiz_db
+    
+    volumes:
+      - quiz_mysql_data:/var/lib/mysql
+
+  quiz-service:
+    build: ./quiz-service
+    networks:
+      - microservices-network
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_CONFIG_URI: http://config-server:8888
+      SPRING_PROFILES_ACTIVE: native
+      SPRING_DATASOURCE_URL: jdbc:mysql://quiz-mysql:3306/application_quiz_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka  
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
 
   api-gateway:
     build: ./api-gateway
@@ -133,3 +167,4 @@ services:
       - "3000:80"
     depends_on:
       - api-gateway
+
