@@ -5,8 +5,9 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
+  auth_mysql_data:
   redis_data:
+  problem_mysql_data:
 
 services:
 
@@ -20,6 +21,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: application_auth_db
+    volumes:
+      - auth_mysql_data:/var/lib/mysql
 
   redis:
     image: redis:latest
@@ -52,6 +55,10 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
+    healthcheck:
+       test: ["CMD-SHELL", "wget -q --spider http://localhost:8761/ || exit 1"]
+       interval: 5s
+        retries: 20
 
   auth-service:
     build: ./auth-service
@@ -69,6 +76,38 @@ services:
     depends_on:
       discovery-server:
         condition: service_started
+
+  problem-mysql:
+    image: mysql:8.4.7
+    container_name: problem-mysql
+    networks:
+      - microservices-network
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: application_problemdb
+    
+    volumes:
+      - problem_mysql_data:/var/lib/mysql
+
+  problem-service:
+    build: ./problemservice
+    networks:
+      - microservices-network
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_CONFIG_URI: http://config-server:8888
+      SPRING_PROFILES_ACTIVE: native
+      SPRING_DATASOURCE_URL: jdbc:mysql://problem-mysql:3306/application_problemdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      discovery-server:
+        condition: service_started
+      auth-service:
+        condition: service_started    
 
   api-gateway:
     build: ./api-gateway
