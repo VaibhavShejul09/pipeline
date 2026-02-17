@@ -40,6 +40,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+		<!-- Actuator -->
+        <dependency>
+             <groupId>org.springframework.boot</groupId>
+             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
 
         <!-- JPA / Hibernate -->
         <dependency>
